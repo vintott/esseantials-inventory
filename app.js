@@ -6,9 +6,9 @@ const items = [
     { name: "KARCE KC-5991", stock: 10, category: "calculators", type: "calc", img: "karce.png" },
     
     // TODO: add real images for rulers later
-    { name: "Standard T-Square (36\")", stock: 5, category: "drafting", type: "draft", img: "tsquare.png" },
-    { name: "30x60 Triangle Ruler", stock: 4, category: "drafting", type: "draft", img: "" },
-    { name: "45x45 Triangle Ruler", stock: 4, category: "drafting", type: "draft", img: "" }
+    { name: "Standard T-Square (_\")", stock: 0, category: "drafting", type: "draft", img: "tsquare.png" },
+    { name: "__x__ Triangle Ruler", stock: 0, category: "drafting", type: "draft", img: "" },
+    { name: "__x__ Triangle Ruler", stock: 0, category: "drafting", type: "draft", img: "" }
 ];
 
 let activeTab = 'calculators';
