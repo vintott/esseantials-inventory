@@ -3,43 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>esSEAntials Inventory</title>
+    <title>esSEAntials | Student Council Inventory</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; border: 2px solid #ccc; }
-        .out-of-stock { border-color: #ff4d4d; background: #fff0f0; opacity: 0.7; }
-        .btn { display: inline-block; margin-top: 10px; padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
-        .btn-disabled { background: #ccc; cursor: not-allowed; pointer-events: none; }
+        :root {
+            --primary: #1e293b;
+            --accent: #0284c7;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text-main); line-height: 1.5; padding-bottom: 60px; }
+        
+        header { background: var(--primary); color: white; padding: 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.025em; }
+        header p { color: #94a3b8; font-size: 0.875rem; margin-top: 0.25rem; }
+
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s ease; }
+
+        /* Grid & Cards Layout */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+        .card { background: var(--card-bg); border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.5rem; text-align: center; transition: transform 0.2s, box-shadow 0.2s; position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+        .card.out-of-stock { border-color: #fca5a5; background: var(--danger-bg); }
+        
+        .img-container { height: 120px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; border-radius: 8px; margin-bottom: 1rem; color: #94a3b8; }
+        .img-container img { max-height: 100%; max-width: 100%; object-fit: contain; }
+
+        .item-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--primary); }
+        
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.8125rem; font-weight: 600; border-radius: 9999px; margin-bottom: 1.25rem; }
+        .badge-available { background: #dcfce7; color: #15803d; }
+        .badge-unavailable { background: #fee2e2; color: #b91c1c; }
+
+        .btn { display: block; width: 100%; padding: 0.75rem; background: var(--accent); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer; transition: background 0.2s; text-align: center; }
+        .btn:hover { background: #0369a1; }
+        .btn-disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; pointer-events: none; }
+        .btn-secondary { background: #64748b; margin-bottom: 1.5rem; display: inline-block; width: auto; padding: 0.5rem 1rem; }
+        .btn-secondary:hover { background: #475569; }
+
+        /* Rules Page Styling */
+        .rules-panel { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 1px 3px rgb(0 0 0 / 0.1); }
+        .rules-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        
+        .steps-list { list-style: none; margin-bottom: 2.5rem; }
+        .step-item { position: relative; padding-left: 3rem; margin-bottom: 1.5rem; }
+        .step-number { position: absolute; left: 0; top: 0; width: 2rem; height: 2rem; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+        .step-item h4 { font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
+        .step-item p { font-size: 0.925rem; color: var(--text-muted); margin-top: 0.25rem; }
+        .step-item em { font-size: 0.85rem; color: #64748b; display: block; margin-top: 0.15rem; }
+
+        .policy-section { margin-bottom: 1.5rem; }
+        .policy-section h4 { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; }
+        .policy-section ul { padding-left: 1.25rem; color: var(--text-muted); font-size: 0.925rem; }
+        .policy-section li { margin-bottom: 0.35rem; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <h1>esSEAntials Inventory</h1>
-    <div class="grid" id="inventory"></div>
+
+    <header>
+        <h1>esSEAntials Inventory</h1>
+        <p>Office of the Vice Governor • CSC-SEA Technical Lending Hub</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- INVENTORY CATALOG VIEW -->
+        <div id="catalog-view" class="view active">
+            <div class="grid" id="inventory-grid"></div>
+        </div>
+
+        <!-- BORROWING PROCEDURES & POLICY VIEW -->
+        <div id="rules-view" class="view">
+            <button class="btn btn-secondary" onclick="showView('catalog-view')">← Back to Live Inventory</button>
+            
+            <div class="rules-panel">
+                <h3 class="rules-title">Borrowing Steps & Guidelines</h3>
+                <ul class="steps-list">
+                    <li class="step-item">
+                        <div class="step-number">1</div>
+                        <h4>Message the Facebook Page</h4>
+                        <p>Send a direct message to the official esSEAntials Facebook page stating the specific model item you need.</p>
+                        <em>Average queue validation response time: 10–15 minutes</em>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">2</div>
+                        <h4>Proceed to the CSC-SEA Office</h4>
+                        <p>Once your reservation is confirmed via chat, head to the office located at the APS 3rd Floor, near the bridge.</p>
+                        <em>Operational hours: 8:00 AM – 5:00 PM</em>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">3</div>
+                        <h4>Verification & ID Collateral</h4>
+                        <p>Review the standard agreements, sign the physical Borrowing Logbook, and leave your valid HAU Student ID with the officer.</p>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">4</div>
+                        <h4>Receive Equipment</h4>
+                        <p>Inspect the device details before leaving. Remember, all gear is strictly provisioned for on-campus configurations only.</p>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">5</div>
+                        <h4>Timely Return Checkpoint</h4>
+                        <p>Return your assigned equipment back to the desk on the same day prior to the closing cutoff time.</p>
+                        <em>Strict Return Deadline: 5:00 PM daily</em>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">6</div>
+                        <h4>Feedback Record</h4>
+                        <p>Complete the brief 1-minute quality feedback form at the counter to claim back your HAU Student ID card.</p>
+                    </li>
+                </ul>
+
+                <h3 class="rules-title" style="color: var(--danger);">Important Rules & Penalties</h3>
+                
+                <div class="policy-section">
+                    <h4>Eligibility Constraints</h4>
+                    <ul>
+                        <li>Exclusively accessible to currently enrolled students under the School of Engineering and Architecture (SEA).</li>
+                        <li>Possession and deposit of an authentic HAU Student ID is mandatory.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h4>Borrowing Terms & Limits</h4>
+                    <ul>
+                        <li>Each individual student is capped at a maximum of <strong>5 lending transactions per month</strong>.</li>
+                        <li>Same-day return guidelines apply unconditionally unless explicitly authorized by technical administrative staff.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h4>Late Returns & Device Care</h4>
+                    <ul>
+                        <li>Any device return logs registered past 5:00 PM or kept overnight will be automatically penalized as late.</li>
+                        <li>Accumulating <strong>3 late marks</strong> will result in a temporary suspension of all borrowing network clearance profiles.</li>
+                        <li>Instruments must be turned in clean. Please ensure drafting surfaces are thoroughly cleared of any ink or graphite residues.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h4>Loss & Damage Liability</h4>
+                    <ul>
+                        <li>Borrowers bear absolute liability for damage issues. Consequences require either an exact device model replacement or matching component compensation payments.</li>
+                        <li>Unresolved violations escalate directly to council management and corresponding academic department supervisors.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h4>Reporting Protocols</h4>
+                    <ul>
+                        <li>Immediate damage system failures must be flagged right away to counter attendants, the Vice Governor, or submitted directly via the official esSEAntials Facebook channel page.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     <script>
-        // EDIT THIS LIST TO UPDATE STOCK
+        // CONFIGURATION: Edit stock numbers here to dynamically change the frontend look
         const inventory = [
-            { name: "Casio fx-570ES PLUS (1)", stock: 1, img: "https://via.placeholder.com/150" },
-            { name: "Casio fx-991ES PLUS", stock: 0, img: "https://via.placeholder.com/150" },
-            { name: "Canon F-789G", stock: 1, img: "https://via.placeholder.com/150" },
-            { name: "Casio fx-570 ES Plus (2)", stock: 1, img: "https://via.placeholder.com/150" },
-            { name: "Casio fx-570 ES Plus (3)", stock: 1, img: "https://via.placeholder.com/150" },
-            { name: "SHARP EL-W531TH-WH", stock: 1, img: "https://via.placeholder.com/150" },
-            { name: "Casio fx350", stock: 0, img: "https://via.placeholder.com/150" }
+            { name: "Casio fx-570ES PLUS (1)", stock: 1, img: "" },
+            { name: "Casio fx-991ES PLUS", stock: 0, img: "" },
+            { name: "Canon F-789G", stock: 1, img: "" },
+            { name: "Casio fx-570 ES Plus (2)", stock: 1, img: "" },
+            { name: "Casio fx-570 ES Plus (3)", stock: 1, img: "" },
+            { name: "SHARP EL-W531TH-WH", stock: 1, img: "" },
+            { name: "Casio fx350", stock: 0, img: "" }
         ];
 
-        const container = document.getElementById('inventory');
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        const container = document.getElementById('inventory-grid');
         inventory.forEach(item => {
+            const isOut = item.stock === 0;
             const card = document.createElement('div');
-            card.className = `card ${item.stock === 0 ? 'out-of-stock' : ''}`;
+            card.className = `card ${isOut ? 'out-of-stock' : ''}`;
+            
+            // Temporary placeholder box layout if image string is blank
+            const imageContent = item.img 
+                ? `<img src="${item.img}" alt="${item.name}">` 
+                : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><p style="font-size:10px; margin-top:4px;">No Image</p></svg>`;
+
             card.innerHTML = `
-                <img src="${item.img}" width="100">
-                <h3>${item.name}</h3>
-                <p>Status: <b>${item.stock > 0 ? 'Available (' + item.stock + ')' : 'Out of Stock'}</b></p>
-                <a href="https://m.me/your-facebook-page" class="btn ${item.stock === 0 ? 'btn-disabled' : ''}">
-                    ${item.stock > 0 ? 'Borrow Now' : 'Unavailable'}
-                </a>
+                <div>
+                    <div class="img-container">${imageContent}</div>
+                    <div class="item-name">${item.name}</div>
+                    <span class="badge ${isOut ? 'badge-unavailable' : 'badge-available'}">
+                        ${isOut ? 'Out of Stock' : `Available (${item.stock})`}
+                    </span>
+                </div>
+                <button onclick="showView('rules-view')" class="btn ${isOut ? 'btn-disabled' : ''}">
+                    ${isOut ? 'Unavailable' : 'Borrow Now'}
+                </button>
             `;
             container.appendChild(card);
         });
