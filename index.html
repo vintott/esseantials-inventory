@@ -231,18 +231,18 @@
     </div>
 
     <script>
-        // DATA ARRAY: Items categorized into 'calculators' or 'drafting'
+      // DATA ARRAY: Update the img paths with your exact filenames
         const inventory = [
-            { name: "CASIO fx-570 ES PLUS", stock: 2, category: "calculators", type: "calc" },
-            { name: "CASIO fx-991 ES PLUS", stock: 1, category: "calculators", type: "calc" },
-            { name: "CASIO fx-350 ES PLUS", stock: 1, category: "calculators", type: "calc" },
-            { name: "SHARP EL-W531TH", stock: 1, category: "calculators", type: "calc" },
-            { name: "KARCE KC-5991", stock: 10, category: "calculators", type: "calc" },
+            { name: "CASIO fx-570 ES PLUS", stock: 2, category: "calculators", type: "calc", img: "casio570.png" },
+            { name: "CASIO fx-991 ES PLUS", stock: 1, category: "calculators", type: "calc", img: "casio991.png" },
+            { name: "CASIO fx-350 ES PLUS", stock: 1, category: "calculators", type: "calc", img: "casio350.png" },
+            { name: "SHARP EL-W531TH", stock: 1, category: "calculators", type: "calc", img: "sharp.png" },
+            { name: "KARCE KC-5991", stock: 10, category: "calculators", type: "calc", img: "karce.png" },
             
-            // Drafting Gear Categories (Change stock numbers here as needed)
-            { name: "Standard T-Square (36\")", stock: 5, category: "drafting", type: "draft" },
-            { name: "30x60 Triangle Ruler", stock: 4, category: "drafting", type: "draft" },
-            { name: "45x45 Triangle Ruler", stock: 4, category: "drafting", type: "draft" }
+            // Do the same for drafting gear if you have images for them later
+            { name: "Standard T-Square (36\")", stock: 5, category: "drafting", type: "draft", img: "tsquare.png" },
+            { name: "30x60 Triangle Ruler", stock: 4, category: "drafting", type: "draft", img: "" },
+            { name: "45x45 Triangle Ruler", stock: 4, category: "drafting", type: "draft", img: "" }
         ];
 
         let currentCategory = 'calculators';
