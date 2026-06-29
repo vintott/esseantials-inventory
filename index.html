@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>esSEAntials Inventory</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; border: 2px solid #ccc; }
+        .out-of-stock { border-color: #ff4d4d; background: #fff0f0; opacity: 0.7; }
+        .btn { display: inline-block; margin-top: 10px; padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .btn-disabled { background: #ccc; cursor: not-allowed; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <h1>esSEAntials Inventory</h1>
+    <div class="grid" id="inventory"></div>
+
+    <script>
+        // EDIT THIS LIST TO UPDATE STOCK
+        const inventory = [
+            { name: "Casio fx-570ES PLUS (1)", stock: 1, img: "https://via.placeholder.com/150" },
+            { name: "Casio fx-991ES PLUS", stock: 0, img: "https://via.placeholder.com/150" },
+            { name: "Canon F-789G", stock: 1, img: "https://via.placeholder.com/150" },
+            { name: "Casio fx-570 ES Plus (2)", stock: 1, img: "https://via.placeholder.com/150" },
+            { name: "Casio fx-570 ES Plus (3)", stock: 1, img: "https://via.placeholder.com/150" },
+            { name: "SHARP EL-W531TH-WH", stock: 1, img: "https://via.placeholder.com/150" },
+            { name: "Casio fx350", stock: 0, img: "https://via.placeholder.com/150" }
+        ];
+
+        const container = document.getElementById('inventory');
+        inventory.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `card ${item.stock === 0 ? 'out-of-stock' : ''}`;
+            card.innerHTML = `
+                <img src="${item.img}" width="100">
+                <h3>${item.name}</h3>
+                <p>Status: <b>${item.stock > 0 ? 'Available (' + item.stock + ')' : 'Out of Stock'}</b></p>
+                <a href="https://m.me/your-facebook-page" class="btn ${item.stock === 0 ? 'btn-disabled' : ''}">
+                    ${item.stock > 0 ? 'Borrow Now' : 'Unavailable'}
+                </a>
+            `;
+            container.appendChild(card);
+        });
+    </script>
+</body>
+</html>
