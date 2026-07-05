@@ -1,11 +1,10 @@
-// Paste your live Web App URL here
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvfeJ58juWb06BDZWqZjsZa1fvPev3HYwsPN87RANDGu3s0y9rnAzPdX28DyYch2Q1/exec";
+// Updated with your brand new deployment link
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQVgzXzuvi0lgc16tsKJ27p8U5XCOSyNBFkRpK86MlLl2ZxslOqpBTDGFxaWEYacL0LA/exec";
 
-// This will hold our live data once fetched from the Google Sheet
 let inventory = [];
 let activeTab = 'calculators';
 
-// 1. New initialization function to fetch live data from Google Sheets
+// 1. Database Fetch Engine
 async function initializeApp() {
     const grid = document.getElementById('inventory-grid');
     grid.innerHTML = '<div class="loading-message" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;"><i class="fa-solid fa-spinner fa-spin"></i> Loading live inventory...</div>';
@@ -14,14 +13,13 @@ async function initializeApp() {
         const response = await fetch(SCRIPT_URL);
         if (!response.ok) throw new Error("Network response was not ok");
         
-        // Save the incoming spreadsheet JSON rows directly into our inventory state
         inventory = await response.json();
         
         // Render the items onto the screen
         loadItems();
     } catch (error) {
         console.error("Failed to fetch inventory:", error);
-        grid.innerHTML = '<div class="error-message" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--danger-red);"><i class="fa-solid fa-triangle-exclamation"></i> Error connecting to live inventory database.</div>';
+        grid.innerHTML = '<div class="error-message" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #dc3545;"><i class="fa-solid fa-triangle-exclamation"></i> Error connecting to live inventory database.</div>';
     }
 }
 
@@ -40,18 +38,18 @@ function switchCategory(targetCat) {
     loadItems();
 }
 
+// 2. Visual Layout Compiler
 function loadItems() {
     const grid = document.getElementById('inventory-grid');
     grid.innerHTML = ''; 
     
-    // Safety check: if inventory failed to load or is empty, don't break the loop
     if (!inventory || inventory.length === 0) return;
     
-    // Filters the live array data by your active navigation tab
+    // Filters rows matching your active navigation categories
     const list = inventory.filter(i => i.category === activeTab);
     
     list.forEach(i => {
-        // Enforce strong parsing for the stock numbers coming from the sheet cells
+        // Enforces strong numerical matching for empty/string sheet rows
         const itemStock = parseInt(i.stock, 10) || 0;
         const outOfStock = itemStock <= 0;
         
@@ -86,5 +84,5 @@ function loadItems() {
     });
 }
 
-// 2. Triggers the main database request engine on page load
+// Kick off initialization on load
 initializeApp();
