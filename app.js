@@ -32,10 +32,11 @@ function loadItems() {
     const grid = document.getElementById('inventory-grid');
     grid.innerHTML = ''; 
     
-    const list = items.filter(i => i.category === activeTab);
+    // Uses your activeTab system to filter your local state
+    const list = inventory.filter(i => i.category === activeTab);
     
     list.forEach(i => {
-        const outOfStock = i.stock === 0;
+        const outOfStock = i.stock <= 0;
         const card = document.createElement('div');
         card.className = `card ${outOfStock ? 'out-of-stock' : ''}`;
         
@@ -50,17 +51,17 @@ function loadItems() {
             graphic = `<div class="fallback-svg-box">${svg}<p class="fallback-label">Image Pending</p></div>`;
         }
 
+        // Modernized inner HTML with icons next to the text inside the badge structures
         card.innerHTML = `
             <div>
-                <div class="img-container">
-                    ${graphic}
-                </div>
+                <div class="img-container">${graphic}</div>
                 <div class="item-name">${i.name}</div>
                 <span class="badge ${outOfStock ? 'badge-unavailable' : 'badge-available'}">
+                    <i class="fa-solid ${outOfStock ? 'fa-circle-xmark' : 'fa-circle-check'}"></i>
                     ${outOfStock ? 'Out of Stock' : `Available (${i.stock})`}
                 </span>
             </div>
-            <button onclick="changeScreen('rules-view')" class="btn ${outOfStock ? 'btn-disabled' : ''}">
+            <button onclick="${outOfStock ? '' : `borrowItem('${i.name.replace(/'/g, "\\'")}', this)`}" class="btn ${outOfStock ? 'btn-disabled' : ''}">
                 ${outOfStock ? 'Unavailable' : 'Borrow Now'}
             </button>
         `;
