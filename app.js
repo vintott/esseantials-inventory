@@ -1,5 +1,5 @@
 // Ensure this URL exactly matches your newest deployment link!
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQVgzXzuvi0lgc16tsKJ27p8U5XCOSyNBFkRpK86MlLl2ZxslOqpBTDGFxaWEYacL0LA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEXFsr4IzIWJ_jpq_PT1M0UFZpMU2vxsUch3-RxkZciAzSAMXNRBYucwbJzufp92cOIw/exec";
 
 let inventory = [];
 let activeTab = 'calculators';
