@@ -65,8 +65,8 @@ function loadItems() {
                 ${outOfStock ? 'Unavailable' : 'Borrow Now'}
             </button>
         `;
-        grid.appendChild(card);
+grid.appendChild(card);
     });
 }
 
-loadItems();
+loadItems(); // Or initializeApp(); depending on what your start function is named!
