@@ -1,55 +1,76 @@
-// Updated with your brand new deployment link
+// Ensure this URL exactly matches your newest deployment link!
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQVgzXzuvi0lgc16tsKJ27p8U5XCOSyNBFkRpK86MlLl2ZxslOqpBTDGFxaWEYacL0LA/exec";
 
 let inventory = [];
 let activeTab = 'calculators';
 
-// 1. Database Fetch Engine
+// 1. Live Database Sync Engine
 async function initializeApp() {
     const grid = document.getElementById('inventory-grid');
-    grid.innerHTML = '<div class="loading-message" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;"><i class="fa-solid fa-spinner fa-spin"></i> Loading live inventory...</div>';
+    if (grid) {
+        grid.innerHTML = `
+            <div class="loading-message" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                <i class="fa-solid fa-spinner fa-spin"></i> Synchronizing with live council records...
+            </div>`;
+    }
     
     try {
+        console.log("Fetching from:", SCRIPT_URL);
         const response = await fetch(SCRIPT_URL);
         if (!response.ok) throw new Error("Network response was not ok");
         
+        // Grab the aggregated items array directly from the sheet API
         inventory = await response.json();
+        console.log("Data successfully loaded:", inventory);
         
-        // Render the items onto the screen
+        // Render the UI cards
         loadItems();
     } catch (error) {
-        console.error("Failed to fetch inventory:", error);
-        grid.innerHTML = '<div class="error-message" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #dc3545;"><i class="fa-solid fa-triangle-exclamation"></i> Error connecting to live inventory database.</div>';
+        console.error("Database connection failure:", error);
+        if (grid) {
+            grid.innerHTML = `
+                <div class="error-message" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #dc3545;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Error connecting to live inventory database.
+                </div>`;
+        }
     }
 }
 
 function changeScreen(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(viewId).classList.add('active');
+    const targetView = document.getElementById(viewId);
+    if (targetView) targetView.classList.add('active');
     window.scrollTo(0, 0);
 }
 
 function switchCategory(targetCat) {
     activeTab = targetCat;
     
-    document.getElementById('tab-calculators').classList.toggle('active', targetCat === 'calculators');
-    document.getElementById('tab-drafting').classList.toggle('active', targetCat === 'drafting');
+    const tabCalc = document.getElementById('tab-calculators');
+    const tabDraft = document.getElementById('tab-drafting');
+    
+    if (tabCalc) tabCalc.classList.toggle('active', targetCat === 'calculators');
+    if (tabDraft) tabDraft.classList.toggle('active', targetCat === 'drafting');
     
     loadItems();
 }
 
-// 2. Visual Layout Compiler
+// 2. Dynamic Component Framework Builder
 function loadItems() {
     const grid = document.getElementById('inventory-grid');
+    if (!grid) return;
     grid.innerHTML = ''; 
     
-    if (!inventory || inventory.length === 0) return;
+    if (!inventory || inventory.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #666; padding: 2rem;">No items found in this category.</div>`;
+        return;
+    }
     
-    // Filters rows matching your active navigation categories
+    // Filters items based on active workspace tab selection
     const list = inventory.filter(i => i.category === activeTab);
     
     list.forEach(i => {
-        // Enforces strong numerical matching for empty/string sheet rows
+        // Enforces strong integer casting for inventory level values
         const itemStock = parseInt(i.stock, 10) || 0;
         const outOfStock = itemStock <= 0;
         
@@ -84,5 +105,5 @@ function loadItems() {
     });
 }
 
-// Kick off initialization on load
-initializeApp();
+// Start database integration automatically on page layout load
+document.addEventListener("DOMContentLoaded", initializeApp);
